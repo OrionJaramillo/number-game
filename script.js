@@ -4,6 +4,10 @@ const ourForm = document.querySelector(".our-form")
 const ourField = document.querySelector(".our-field")
 const pointsNeeded = document.querySelector(".points-needed")
 const mistakesAllowed = document.querySelector(".mistakes-allowed")
+const progressBar = document.querySelector(".progress-inner")
+const endMessage = document.querySelector(".end-message")
+const resetButton = document.querySelector(".reset-button")
+
 
 //declare state variable equal to object with default properties for our game
 let state = {
@@ -57,10 +61,14 @@ function handleSubmit(e){
         state.score++
         pointsNeeded.textContent = 10 - state.score
         updateProblem()
+        renderProgressBar()
+        problemElement.classList.add("animate-right")
+        setTimeout(() => problemElement.classList.remove("animate-right"), 450)
     }else{
         state.wrongAnswers++
         mistakesAllowed.textContent = 2 - state.wrongAnswers
-        updateProblem()
+        problemElement.classList.add("animate-wrong")
+        setTimeout(() => problemElement.classList.remove("animate-wrong"), 450)
     }
 
     checkLogic()
@@ -71,22 +79,33 @@ function handleSubmit(e){
 function checkLogic(){
     //if you won
     if(state.score === 10){
-        alert("Congrats you won")
-        resetGame()
+        endMessage.textContent = "Congrats, you won!"
+        document.body.classList.add("overlay-is-open")
+        setTimeout(() => resetButton.focus(),331)
     }
 
     //ifyou lost
     if (state.wrongAnswers === 3){
-        alert("Sorry, you lost")
-        resetGame()
+        endMessage.textContent = "Sorry, you lost..."
+        document.body.classList.add("overlay-is-open")
+        setTimeout(() => resetButton.focus(),331)
     }
 }
 
+resetButton.addEventListener("click", resetGame)
+
 //reset the game
 function resetGame(){
+    document.body.classList.remove("overlay-is-open")
     updateProblem()
     state.score = 0
     state.wrongAnswers = 0
     pointsNeeded.textContent = 10
     mistakesAllowed.textContent = 2
+    renderProgressBar()
+}
+
+function renderProgressBar(){
+    progressBar.style.transform = `scaleX(${state.score / 10})` //state.score is/10 so that the progress bar will increase by .10 (ie full barr = 1 so we want 1 correct answer = .10 ) 
+
 }
